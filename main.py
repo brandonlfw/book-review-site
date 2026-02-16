@@ -8,6 +8,7 @@ def get_db():
     """Connect to database"""
 
     conn = sqlite3.connect(book_db)
+    conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
@@ -30,6 +31,14 @@ def init_db():
 init_db()
 
 
+@app.route("/books", methods=["GET"])
+def get_books():
+    conn = get_db()
+    books = conn.execute("SELECT * FROM books").fetchall()
+    conn.close()
+    return jsonify([dict(book) for book in books]), 200
+
+
 @app.route("/books", methods=["POST"])
 def add_book():
     data = request.get_json()
@@ -45,7 +54,8 @@ def add_book():
             INSERT INTO books (title, reviewer, rating, review)
             VALUES (?, ?, ?, ?)
         """,
-        (data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get["review", "No review"])
+        (data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review")
+        )
     )
     conn.commit()
     book_id = cursor.lastrowid
@@ -57,7 +67,7 @@ def add_book():
         "title": data["title"],
         "reviewer": data.get("reviewer", "Anonymous"), 
         "rating": data["rating"], 
-        "review": data.get["review", "No review"]
+        "review": data.get("review", "No review")
     }
 
     return jsonify(new_book), 201
@@ -65,4 +75,4 @@ def add_book():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
