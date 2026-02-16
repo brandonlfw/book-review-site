@@ -30,6 +30,38 @@ def init_db():
 init_db()
 
 
+@app.route("/books", methods=["POST"])
+def add_book():
+    data = request.get_json()
+
+    # Missing data -> return error msg
+    if not data or "title" not in data or "rating" not in data:
+        return jsonify({"error": "Title is required"}), 400
+    
+    # Save new book review to database
+    conn = get_db()
+    cursor = conn.execute(
+        """
+            INSERT INTO books (title, reviewer, rating, review)
+            VALUES (?, ?, ?, ?)
+        """,
+        (data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get["review", "No review"])
+    )
+    conn.commit()
+    book_id = cursor.lastrowid
+    conn.close()
+
+    # Post new book review to '/books' endpoint
+    new_book = {
+        "id": book_id,
+        "title": data["title"],
+        "reviewer": data.get("reviewer", "Anonymous"), 
+        "rating": data["rating"], 
+        "review": data.get["review", "No review"]
+    }
+
+    return jsonify(new_book), 201
+
 
 
 if __name__ == "__main__":
