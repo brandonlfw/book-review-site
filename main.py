@@ -33,10 +33,30 @@ init_db()
 
 @app.route("/books", methods=["GET"])
 def get_books():
+    """Get all books"""
+
     conn = get_db()
     books = conn.execute("SELECT * FROM books").fetchall()
     conn.close()
     return jsonify([dict(book) for book in books]), 200
+
+
+
+@app.route("/books/<title>", methods=["GET"])
+def get_book(title):
+    """Get aa single book"""
+    
+    conn = get_db()
+    book = conn.execute("""
+        SELECT * FROM books
+        WHERE title = ?
+    """,(title,)).fetchone()
+    conn.close()
+
+    if book is None:
+        return jsonify({"error": "Book not found"}), 404
+    return jsonify(dict(book)), 200
+
 
 
 @app.route("/books", methods=["POST"])
