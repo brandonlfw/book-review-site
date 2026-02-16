@@ -4,16 +4,14 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 book_db = "books.db"
 
+# Connect to DB
 def get_db():
-    """Connect to database"""
-
     conn = sqlite3.connect(book_db)
     conn.row_factory = sqlite3.Row
     return conn
 
+# Initialize books.db with 'books' table if it DNE
 def init_db():
-    """Create books table if it does not exist"""
-
     conn = get_db()
     conn.execute("""
         CREATE TABLE IF NOT EXISTS books (
@@ -31,21 +29,18 @@ def init_db():
 init_db()
 
 
+# GET all book reviews
 @app.route("/books", methods=["GET"])
 def get_books():
-    """Get all books"""
-
     conn = get_db()
     books = conn.execute("SELECT * FROM books").fetchall()
     conn.close()
     return jsonify([dict(book) for book in books]), 200
 
 
-
+# GET a single book review by ID
 @app.route("/books/<int:id>", methods=["GET"])
 def get_book(id):
-    """Get a single book by id"""
-
     conn = get_db()
     book = conn.execute("""
         SELECT * FROM books
@@ -58,7 +53,7 @@ def get_book(id):
     return jsonify(dict(book)), 200
 
 
-
+# POST - create a new book review
 @app.route("/books", methods=["POST"])
 def add_book():
     data = request.get_json()
@@ -93,6 +88,7 @@ def add_book():
     return jsonify(new_book), 201
 
 
+# PUT - update a book review by ID
 @app.route("/books/<int:id>", methods=["PUT"])
 def update_review(id):
     data = request.get_json()
@@ -126,6 +122,24 @@ def update_review(id):
     }
 
     return jsonify(updated_review), 200
+
+
+# DELETE a book review by ID
+@app.route("/books/<int:id>", methods=["DELETE"])
+def delete_book(id):
+    conn = get_db()
+    result = conn.execute("""
+        DELETE FROM books
+        WHERE id = ?
+    """,(id,))
+    conn.commit()
+    rows_deleted = result.rowcount
+    conn.close()
+
+    if rows_deleted == 0:
+        return jsonify({"error": "Unable to delete review"})
+    return jsonify({"message": "Book deleted"}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
