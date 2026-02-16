@@ -42,15 +42,15 @@ def get_books():
 
 
 
-@app.route("/books/<title>", methods=["GET"])
-def get_book(title):
-    """Get aa single book"""
-    
+@app.route("/books/<int:id>", methods=["GET"])
+def get_book(id):
+    """Get a single book by id"""
+
     conn = get_db()
     book = conn.execute("""
         SELECT * FROM books
-        WHERE title = ?
-    """,(title,)).fetchone()
+        WHERE id = ?
+    """,(id,)).fetchone()
     conn.close()
 
     if book is None:
@@ -93,6 +93,39 @@ def add_book():
     return jsonify(new_book), 201
 
 
+@app.route("/books/<int:id>", methods=["PUT"])
+def update_review(id):
+    data = request.get_json()
+
+    if not data or "title" not in data or "rating" not in data:
+        return jsonify({"error": "Title and rating are required"}), 400
+
+    conn = get_db()
+    result = conn.execute("""
+        UPDATE books
+        SET title = ?,
+            reviewer = ?,
+            rating = ?,
+            review = ?
+        WHERE id = ?
+    """,(data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"), id)
+    )
+    conn.commit()
+    rows_updated = result.rowcount
+    conn.close()
+
+    if rows_updated == 0:
+        return jsonify({"error": "Review not found"}), 400
+    
+    updated_review = {
+        "id": id,
+        "title": data["title"],
+        "reviewer": data.get("reviewer", "Anonymous"),
+        "rating": data["rating"],
+        "review": data.get("review", "No review")
+    }
+
+    return jsonify(updated_review), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
