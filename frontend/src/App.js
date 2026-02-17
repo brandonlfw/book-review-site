@@ -3,6 +3,10 @@ import './App.css';
 
 function App() {
   const [books, setBooks] = useState([]); // books starts as empty array, setBooks updates that value
+  const [title, setTitle] = useState('');
+  const [reviewer, setReviewer] = useState('');
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState('');
 
   useEffect(() => {
     fetch('/books')
@@ -10,9 +14,54 @@ function App() {
       .then(data => setBooks(data)); // setBooks(data) stores array of book objects into books state var
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault(); // stops the browser from refreshing the page
+
+    fetch('/books', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, reviewer, rating, review })
+    })
+      .then(res => res.json())
+      .then(newBook => {
+        setBooks([...books, newBook]); // add the new book to the existing array
+        // clear the form
+        setTitle('');
+        setReviewer('');
+        setRating(5);
+        setReview('');
+      });
+  };
+
   return (
     <div className="App">
       <h1>Book Reviews</h1>
+
+      <form onSubmit={handleSubmit}>
+        <input 
+          placeholder="Title" 
+          value={title} 
+          onChange={e => setTitle(e.target.value)} 
+        />
+        <input 
+          placeholder="Reviewer"
+          value={reviewer} 
+          onChange={e => setReviewer(e.target.value)} 
+        />
+        <input 
+          type="number" 
+          placeholder="Rating" 
+          value={rating} 
+          onChange={e => setRating(Number(e.target.value))} 
+        />
+        <textarea 
+          placeholder="Review" 
+          value={review} 
+          onChange={e => setReview(e.target.value)} 
+        />
+        <button type="submit">Add Review</button>
+      </form>
+
       {books.map(book => ( // loops thru each book and return the code under
         <div key={book.id}>
           <h3>{book.title}</h3>
