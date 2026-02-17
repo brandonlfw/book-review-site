@@ -1,2 +1,4 @@
 .venv
+venv
 books.db
+frontend/node_modules
