@@ -14,6 +14,7 @@ function App() {
       .then(data => setBooks(data)); // setBooks(data) stores array of book objects into books state var
   }, []);
 
+  // sends POST request to Flask, then adds review to books array
   const handleSubmit = (e) => {
     e.preventDefault(); // stops the browser from refreshing the page
 
@@ -30,6 +31,16 @@ function App() {
         setReviewer('');
         setRating(5);
         setReview('');
+      });
+  };
+
+  // sends DELETE request to Flask, then removes the book from the list
+  const handleDelete = (id) => {
+    fetch(`/books/${id}`, { method: 'DELETE' })
+      .then(res => {
+        if (res.ok) { // true if HTTP status code btw 200-299
+          setBooks(books.filter(book => book.id !== id)); // keep book if NOT the id deleted
+        }
       });
   };
 
@@ -67,6 +78,7 @@ function App() {
           <h3>{book.title}</h3>
           <p>Rating: {book.rating}/5</p>
           <p>Reviewer: {book.reviewer}</p>
+          <button onClick={() => handleDelete(book.id)}>Delete</button>
         </div>
       ))}
     </div>
