@@ -111,7 +111,7 @@ function BookList() {
 
       {books.map(book => (
          // loops thru each book and return the code under
-        <div key={book.id}>
+        <div key={book.id} className='book-card'>
           <h3>
             <Link to={`/books/${book.id}`}>{book.title}</Link>
           </h3>
