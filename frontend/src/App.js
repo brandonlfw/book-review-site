@@ -7,6 +7,7 @@ function App() {
   const [reviewer, setReviewer] = useState('');
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState('');
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetch('/books')
@@ -14,25 +15,49 @@ function App() {
       .then(data => setBooks(data)); // setBooks(data) stores array of book objects into books state var
   }, []);
 
+
   // sends POST request to Flask, then adds review to books array
   const handleSubmit = (e) => {
-    e.preventDefault(); // stops the browser from refreshing the page
+    e.preventDefault();
 
-    fetch('/books', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, reviewer, rating, review })
-    })
-      .then(res => res.json())
-      .then(newBook => {
-        setBooks([...books, newBook]); // add the new book to the existing array
-        // clear the form
-        setTitle('');
-        setReviewer('');
-        setRating(5);
-        setReview('');
-      });
+    if (editingId) {
+      // editing an existing book — send PUT
+      fetch(`/books/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, reviewer, rating, review })
+      })
+        .then(res => res.json())
+        .then(updatedBook => {
+          setBooks(books.map(book => book.id === editingId ? updatedBook : book));
+
+          // clear form
+          setEditingId(null);
+          setTitle('');
+          setReviewer('');
+          setRating(5);
+          setReview('');
+        });
+    } else {
+      // adding a new book — send POST
+      fetch('/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, reviewer, rating, review })
+      })
+        .then(res => res.json())
+        .then(newBook => {
+          setBooks([...books, newBook]);
+
+          // clear form
+          setTitle('');
+          setReviewer('');
+          setRating(5);
+          setReview('');
+        });
+    }
   };
+
 
   // sends DELETE request to Flask, then removes the book from the list
   const handleDelete = (id) => {
@@ -43,6 +68,17 @@ function App() {
         }
       });
   };
+
+
+  // fills the form with the book's current data for editing
+  const handleEdit = (book) => {
+    setEditingId(book.id);
+    setTitle(book.title);
+    setReviewer(book.reviewer);
+    setRating(book.rating);
+    setReview(book.review);
+  };
+
 
   return (
     <div className="App">
@@ -70,15 +106,17 @@ function App() {
           value={review} 
           onChange={e => setReview(e.target.value)} 
         />
-        <button type="submit">Add Review</button>
+        <button type="submit">{editingId ? 'Update Review' : 'Add Review'}</button>
       </form>
 
-      {books.map(book => ( // loops thru each book and return the code under
+      {books.map(book => (
+         // loops thru each book and return the code under
         <div key={book.id}>
           <h3>{book.title}</h3>
           <p>Rating: {book.rating}/5</p>
           <p>Reviewer: {book.reviewer}</p>
           <button onClick={() => handleDelete(book.id)}>Delete</button>
+          <button onClick={() => handleEdit(book)}>Edit</button>
         </div>
       ))}
     </div>
