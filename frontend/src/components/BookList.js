@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function BookList() {
   const [books, setBooks] = useState([]); // books starts as empty array, setBooks updates that value
@@ -111,7 +112,9 @@ function BookList() {
       {books.map(book => (
          // loops thru each book and return the code under
         <div key={book.id}>
-          <h3>{book.title}</h3>
+          <h3>
+            <Link to={`/books/${book.id}`}>{book.title}</Link>
+          </h3>
           <p>Rating: {book.rating}/5</p>
           <p>Reviewer: {book.reviewer}</p>
           <button onClick={() => handleDelete(book.id)}>Delete</button>
