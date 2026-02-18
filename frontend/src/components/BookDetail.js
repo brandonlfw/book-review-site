@@ -14,7 +14,7 @@ function BookDetail() {
     if (!book) return <p>Loading...</p>;
 
     return (
-        <div>
+        <div className='book-detail'>
             <Link to={'/'}>Back to all reviews</Link>
             <h2>{book.title}</h2>
             <p>Rating: {book.rating}/5</p>

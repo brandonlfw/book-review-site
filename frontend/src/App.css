@@ -52,3 +52,23 @@ button {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
+  .book-detail {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .book-detail h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
+
+  .book-detail p {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: #3498db;
+  }
