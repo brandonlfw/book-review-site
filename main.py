@@ -16,13 +16,17 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS books (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            reviewer TEXT,
-            rating INTEGER NOT NULL,
-            review TEXT
-        )
+      CREATE TABLE IF NOT EXISTS books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        author TEXT,
+        cover_url TEXT,
+        publish_year INTEGER,
+        description TEXT,
+        reviewer TEXT,
+        rating INTEGER NOT NULL,
+        review TEXT
+      )
     """)
     conn.commit()
     conn.close()
@@ -68,11 +72,9 @@ def add_book():
     conn = get_db()
     cursor = conn.execute(
         """
-            INSERT INTO books (title, reviewer, rating, review)
-            VALUES (?, ?, ?, ?)
-        """,
-        (data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review")
-        )
+            INSERT INTO books (title, author, cover_url, publish_year, description, reviewer, rating, review)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (data["title"], data.get("author", "No author"), data.get("cover_url", ""), data.get("publish_year", "No publish year"), data.get("description", "No description"), data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"))
     )
     conn.commit()
     book_id = cursor.lastrowid
@@ -82,8 +84,12 @@ def add_book():
     new_book = {
         "id": book_id,
         "title": data["title"],
-        "reviewer": data.get("reviewer", "Anonymous"), 
-        "rating": data["rating"], 
+        "author": data.get("author", "No author"),
+        "cover_url": data.get("cover_url", ""),
+        "publish_year": data.get("publish_year", "No publish year"),
+        "description": data.get("description", "No description"),
+        "reviewer": data.get("reviewer", "Anonymous"),
+        "rating": data["rating"],
         "review": data.get("review", "No review")
     }
 
@@ -102,11 +108,15 @@ def update_review(id):
     result = conn.execute("""
         UPDATE books
         SET title = ?,
+            author = ?,
+            cover_url = ?,
+            publish_year = ?,
+            description = ?,
             reviewer = ?,
             rating = ?,
             review = ?
         WHERE id = ?
-    """,(data["title"], data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"), id)
+    """,(data["title"], data.get("author", "No author"), data.get("cover_url", ""), data.get("publish_year", "No publish year"), data.get("description", "No description"), data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"), id)
     )
     conn.commit()
     rows_updated = result.rowcount
@@ -118,6 +128,10 @@ def update_review(id):
     updated_review = {
         "id": id,
         "title": data["title"],
+        "author": data.get("author", "No author"),
+        "cover_url": data.get("cover_url", ""),
+        "publish_year": data.get("publish_year", "No publish year"),
+        "description": data.get("description", "No description"),
         "reviewer": data.get("reviewer", "Anonymous"),
         "rating": data["rating"],
         "review": data.get("review", "No review")
