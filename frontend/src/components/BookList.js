@@ -9,6 +9,10 @@ function BookList() {
     const [review, setReview] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [suggestions, setSuggestions] = useState([]);
+    const [author, setAuthor] = useState('');
+    const [coverUrl, setCoverUrl] = useState('');
+    const [publishYear, setPublishYear] = useState('');
+    const [description, setDescription] = useState('');
 
     useEffect(() => {
         fetch('/books')
@@ -119,8 +123,11 @@ function BookList() {
                                 className="suggestion-item"
                                 onClick={() => {
                                     setTitle(s.title);
+                                    setAuthor(s.author_name ? s.author_name[0] : '');
+                                    setCoverUrl(s.cover_i ? `https://covers.openlibrary.org/b/id/${s.cover_i}-M.jpg` : '');
+                                    setPublishYear(s.first_publish_year || '');
+                                    setDescription(s.first_sentence ? s.first_sentence[0] : '');
                                     setSuggestions([]);
-                                    console.log('Selected book:', s);
                                 }}
                             >
                                 {s.title} — {s.author_name ? s.author_name[0] : 'Unknown author'}
@@ -146,6 +153,17 @@ function BookList() {
                 />
                 <button type="submit">{editingId ? 'Update Review' : 'Add Review'}</button>
             </form>
+
+            {/* Book cover and preview information */}
+            {coverUrl && (
+                <div className="book-preview">
+                    <img src={coverUrl} alt={title} />
+                    <p><strong>{title}</strong></p>
+                    <p>{author}</p>
+                    <p>{publishYear}</p>
+                    <p>{description}</p>
+                </div>
+            )}
 
             {books.map(book => (
                 // loops thru each book and return the code under
