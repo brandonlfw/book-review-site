@@ -87,6 +87,10 @@ function BookList() {
     const handleEdit = (book) => {
         setEditingId(book.id);
         setTitle(book.title);
+        setAuthor(book.author || '');
+        setCoverUrl(book.cover_url || '');
+        setPublishYear(book.publish_year || '');
+        setDescription(book.description || '');
         setReviewer(book.reviewer);
         setRating(book.rating);
         setReview(book.review);

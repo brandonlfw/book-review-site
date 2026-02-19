@@ -74,7 +74,7 @@ def add_book():
         """
             INSERT INTO books (title, author, cover_url, publish_year, description, reviewer, rating, review)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (data["title"], data.get("author", "No author"), data.get("cover_url", ""), data.get("publish_year", "No publish year"), data.get("description", "No description"), data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"))
+        """, (data["title"], data.get("author") or "No author", data.get("cover_url") or "", data.get("publish_year") or None, data.get("description") or "No description", data.get("reviewer") or "Anonymous", data["rating"], data.get("review") or "No review")
     )
     conn.commit()
     book_id = cursor.lastrowid
@@ -84,13 +84,13 @@ def add_book():
     new_book = {
         "id": book_id,
         "title": data["title"],
-        "author": data.get("author", "No author"),
-        "cover_url": data.get("cover_url", ""),
-        "publish_year": data.get("publish_year", "No publish year"),
-        "description": data.get("description", "No description"),
-        "reviewer": data.get("reviewer", "Anonymous"),
+        "author": data.get("author") or "No author",
+        "cover_url": data.get("cover_url") or "",
+        "publish_year": data.get("publish_year") or None,
+        "description": data.get("description") or "No description",
+        "reviewer": data.get("reviewer") or "Anonymous",
         "rating": data["rating"],
-        "review": data.get("review", "No review")
+        "review": data.get("review") or "No review"
     }
 
     return jsonify(new_book), 201
@@ -116,7 +116,7 @@ def update_review(id):
             rating = ?,
             review = ?
         WHERE id = ?
-    """,(data["title"], data.get("author", "No author"), data.get("cover_url", ""), data.get("publish_year", "No publish year"), data.get("description", "No description"), data.get("reviewer", "Anonymous"), data["rating"], data.get("review", "No review"), id)
+    """,(data["title"], data.get("author") or "No author", data.get("cover_url") or "", data.get("publish_year") or None, data.get("description") or "No description", data.get("reviewer") or "Anonymous", data["rating"], data.get("review") or "No review", id)
     )
     conn.commit()
     rows_updated = result.rowcount
@@ -124,17 +124,17 @@ def update_review(id):
 
     if rows_updated == 0:
         return jsonify({"error": "Review not found"}), 400
-    
+
     updated_review = {
         "id": id,
         "title": data["title"],
-        "author": data.get("author", "No author"),
-        "cover_url": data.get("cover_url", ""),
-        "publish_year": data.get("publish_year", "No publish year"),
-        "description": data.get("description", "No description"),
-        "reviewer": data.get("reviewer", "Anonymous"),
+        "author": data.get("author") or "No author",
+        "cover_url": data.get("cover_url") or "",
+        "publish_year": data.get("publish_year") or None,
+        "description": data.get("description") or "No description",
+        "reviewer": data.get("reviewer") or "Anonymous",
         "rating": data["rating"],
-        "review": data.get("review", "No review")
+        "review": data.get("review") or "No review"
     }
 
     return jsonify(updated_review), 200
