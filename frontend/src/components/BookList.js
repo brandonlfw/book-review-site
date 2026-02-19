@@ -30,7 +30,7 @@ function BookList() {
             fetch(`/books/${editingId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, reviewer, rating, review })
+                body: JSON.stringify({ title, author, cover_url: coverUrl, publish_year: publishYear, description, reviewer, rating, review })
             })
                 .then(res => res.json())
                 .then(updatedBook => {
@@ -39,6 +39,10 @@ function BookList() {
                     // clear form
                     setEditingId(null);
                     setTitle('');
+                    setAuthor('');
+                    setCoverUrl('');
+                    setPublishYear('');
+                    setDescription('');
                     setReviewer('');
                     setRating(5);
                     setReview('');
@@ -48,7 +52,7 @@ function BookList() {
             fetch('/books', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, reviewer, rating, review })
+                body: JSON.stringify({ title, author, cover_url: coverUrl, publish_year: publishYear, description, reviewer, rating, review })
             })
                 .then(res => res.json())
                 .then(newBook => {
@@ -56,6 +60,10 @@ function BookList() {
 
                     // clear form
                     setTitle('');
+                    setAuthor('');
+                    setCoverUrl('');
+                    setPublishYear('');
+                    setDescription('');
                     setReviewer('');
                     setRating(5);
                     setReview('');
@@ -167,14 +175,18 @@ function BookList() {
 
             {books.map(book => (
                 // loops thru each book and return the code under
-                <div key={book.id} className='book-card'>
-                    <h3>
-                        <Link to={`/books/${book.id}`}>{book.title}</Link>
-                    </h3>
-                    <p>Rating: {book.rating}/5</p>
-                    <p>Reviewer: {book.reviewer}</p>
-                    <button onClick={() => handleDelete(book.id)}>Delete</button>
-                    <button onClick={() => handleEdit(book)}>Edit</button>
+                 <div key={book.id} className='book-card'>
+                    <div className='book-info'>
+                        <h3>
+                            <Link to={`/books/${book.id}`}>{book.title}</Link>
+                        </h3>
+                        <p><strong>Rating: </strong>{book.rating}/5</p>
+                        <p><strong>Reviewer: </strong>{book.reviewer}</p>
+                        <p><i>{book.review}</i></p>
+                        <button onClick={() => handleDelete(book.id)}>Delete</button>
+                        <button onClick={() => handleEdit(book)}>Edit</button>
+                    </div>
+                    {book.cover_url && <img src={book.cover_url} alt={book.title} />}
                 </div>
             ))}
         </div>

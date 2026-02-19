@@ -46,6 +46,8 @@ button {
   }
 
   .book-card {
+    display: flex;
+    gap: 1rem;
     background: white;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -53,11 +55,22 @@ button {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
+  .book-card img {
+    width: 120px;
+    height: auto;
+    border-radius: 4px;
+  }
+
+  .book-card .book-info {
+    flex: 1;
+  }
+
   .book-detail {
     background: white;
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
   }
 
   .book-detail h2 {
@@ -71,4 +84,11 @@ button {
 
   a {
     color: #3498db;
+  }
+
+  .review-list {
+    background: white;
+    padding: 4px 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
